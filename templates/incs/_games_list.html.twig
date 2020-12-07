@@ -1,0 +1,29 @@
+<div class="row">
+    {# foreach($games as $game) #}
+    {% for game in games %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <a href="{{ path('game_details', { id: game.id }) }}"><img class="card-img-top" src="{{ game.image ? vich_uploader_asset(game, 'imageFile') : 'http://placehold.it/700x400' }}" alt=""></a>
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <a href="{{ path('game_details', { id: game.id }) }}">{{ game.name }}</a>
+                    </h4>
+                    <h5>par {{ game.user.firstname }} {{ game.user.lastname }}</h5>
+                    <p class="card-text">{{ game.description }}</p>
+                    <div>
+                        {% for tag in game.tags %}
+                            <a class="badge badge-info" href="{{ path('tag_games', { slug: tag.slug }) }}">#{{ tag.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
+
+{{ knp_pagination_render(games) }}
+<!-- /.row -->

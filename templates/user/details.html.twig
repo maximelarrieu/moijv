@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Profil{% endblock %}
+
+{% block body %}
+    {% set is_current_user = app.user == user %}
+<section class="row my-4 mb-3">
+    <div class="col-3">
+        <img class="img-fluid" src="{{ user.avatar ? vich_uploader_asset(user, 'avatarFile') : 'http://placehold.it/300x300' }}" alt="Avatar">
+        <a class="btn btn-danger mr-3 my-3 ml-3" href="{{ path('logout') }}"><i class="fas fa-power-off mr-2"></i>Déconnexion</a>
+    </div>
+    <div class="col-9">
+        <h2>{{ user.firstname }} {{ user.lastname }}</h2>
+        <p>Inscrit le {{ user.dateInscription | date('d/m/Y') }}</p>
+        {% if user.description %}<p>{{ user.description }}</p>{% endif %}
+        {% if is_current_user %}
+            <div class="btn-group">
+                <a class="btn btn-warning mr-3" href="{{ path('profile_update') }}"><i class="fas fa-pen mr-2"></i>Modifier mon profil</a>
+                <a class="btn btn-info" href="{{ path('profile_update_password') }}"><i class="fas fa-unlock mr-2"></i>Modifier mon mot de passe</a>
+            </div>
+        {% endif %}
+        {% if user.locations != null %}
+            <h4 class="my-4">MES LOCATIONS EN COURS</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Jeux</th>
+                        <th scope="col">Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for location in locations %}
+                        <tr>
+                            <td>{{ location.game.name }}</td>
+                            <td>{{ location.statut }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</section>
+<section>
+    <h3>Les jeux de {{ user.firstname }}</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Jeux</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for game in user.games %}
+            <tr>
+                <td>
+                    <a href="{{ path('game_details', { id: game.id }) }}">{{ game.name }}</a>
+                </td>
+                <td>
+                    {% if is_current_user %}
+                        <a href="{{ path('game_edit', { id: game.id }) }}" class="btn btn-info">Modifier le jeu</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
