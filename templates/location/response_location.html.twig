@@ -1,0 +1,17 @@
+{% if location.statut == 'VALIDÉ' %}
+    <h1>L'utilisateur {{ location.user.firstname }} {{ location.user.lastname }} a accepté votre demande !</h1>
+{% else %}
+    <h1>L'utilisateur {{ location.user.firstname }} {{ location.user.lastname }} n'a pas accepté votre demande !</h1>
+{% endif %}
+<p>
+    {% if location.statut == 'ACCEPTÉ' %}
+        Vous êtes désormais propriétaire du jeu <a href="http://127.0.0.1:8000{{ path('game_details', {id: location.game.id}) }}">{{ location.game.name }}</a>
+    {% else %}
+        Malheureusement votre demande n'a pas été accepté.
+        Vos ne possèderai pas ce jeu pour le moment.
+    {% endif %}
+</p>
+
+<p>
+    Bonne journée !
+</p>

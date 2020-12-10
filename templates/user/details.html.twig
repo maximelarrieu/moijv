@@ -25,16 +25,44 @@
                 <thead>
                     <tr>
                         <th scope="col">Jeux</th>
+                        <th scope="col">Propriétaire</th>
                         <th scope="col">Statut</th>
+                        <th scope="col">Date de lancement</th>
+                        {% if is_current_user %}
+                            <th scope="col">Action</th>
+                        {% endif %}
+
                     </tr>
                 </thead>
                 <tbody>
+                {% if is_current_user %}
                     {% for location in locations %}
                         <tr>
                             <td>{{ location.game.name }}</td>
+                            <td>{{ location.game.user.firstname }} {{ location.game.user.lastname }}</td>
                             <td>{{ location.statut }}</td>
+                            <td>{{ location.createdAt|date("Y/m/d") }}</td>
+                            {% if is_current_user %}
+                                {% if location.endAt != null or location.statut == 'REFUSÉ'%}
+                                    <td><a href="{{ path("delete_location", {id: location.id}) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a></td>
+                                {% elseif location.statut == "VALIDÉ" %}
+                                    <td><a href="{{ path("return_location", {id: location.id}) }}" class="btn btn-success"><i class="fas fa-undo"></i></a></td>
+                                {% endif %}
+                            {% endif %}
                         </tr>
                     {% endfor %}
+                {% else %}
+                    {% for location in locations %}
+                        {% if location.statut == "VALIDÉ" %}
+                            <tr>
+                                <td>{{ location.game.name }}</td>
+                                <td>{{ location.game.user.firstname }} {{ location.game.user.lastname }}</td>
+                                <td>{{ location.statut }}</td>
+                                <td>{{ location.createdAt|date("Y/m/d") }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 </tbody>
             </table>
         {% endif %}
@@ -46,7 +74,9 @@
         <thead>
             <tr>
                 <th scope="col">Jeux</th>
-                <th scope="col">Action</th>
+                {% if is_current_user %}
+                    <th scope="col">Action</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -57,7 +87,7 @@
                 </td>
                 <td>
                     {% if is_current_user %}
-                        <a href="{{ path('game_edit', { id: game.id }) }}" class="btn btn-info">Modifier le jeu</a>
+                        <a href="{{ path('game_edit', { id: game.id }) }}" class="btn btn-warning"><i class="fas fa-pen"></i></a>
                     {% endif %}
                 </td>
             </tr>
