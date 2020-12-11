@@ -50,7 +50,7 @@ class Location
     private $owner;
 
     /**
-     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="location")
+     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="location", cascade={"remove"})
      */
     private $messages;
 
