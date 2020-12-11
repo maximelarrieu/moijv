@@ -5,6 +5,9 @@
 {% block body %}
     <h1 class="my-4">{{ game.name }}</h1>
     <a class="btn btn-warning" href="{{ path("new_location", {id: game.id}) }}"><i class="fas fa-comments-dollar mr-2"></i>Demander une location</a>
+    {% for message in app.flashes("error") %}
+        <div class="alert alert-danger my-4">{{ message }}</div>
+    {% endfor %}
     <p class="my-4">{{ game.description }}</p>
     <a class="btn btn-success" href="{{ path('home') }}"><i class="fas fa-door-open mr-2"></i>Revenir à la page d'accueil</a>
     <a class="btn btn-info" href="{{ path('user_details', { id : game.user.id }) }}"><i class="fas fa-eye mr-2"></i>Voir l'utilisateur du jeu</a>

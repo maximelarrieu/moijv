@@ -4,25 +4,33 @@
 
 {% block body %}
     {% set is_current_user = app.user == user %}
-<section class="row my-4 mb-3">
-    <div class="col-3">
-        <img class="img-fluid" src="{{ user.avatar ? vich_uploader_asset(user, 'avatarFile') : 'http://placehold.it/300x300' }}" alt="Avatar">
-        <a class="btn btn-danger mr-3 my-3 ml-3" href="{{ path('logout') }}"><i class="fas fa-power-off mr-2"></i>Déconnexion</a>
-    </div>
-    <div class="col-9">
-        <h2>{{ user.firstname }} {{ user.lastname }}</h2>
-        <p>Inscrit le {{ user.dateInscription | date('d/m/Y') }}</p>
-        {% if user.description %}<p>{{ user.description }}</p>{% endif %}
-        {% if is_current_user %}
-            <div class="btn-group">
-                <a class="btn btn-warning mr-3" href="{{ path('profile_update') }}"><i class="fas fa-pen mr-2"></i>Modifier mon profil</a>
-                <a class="btn btn-info" href="{{ path('profile_update_password') }}"><i class="fas fa-unlock mr-2"></i>Modifier mon mot de passe</a>
-            </div>
-        {% endif %}
-        {% if user.locations != null %}
-            <h4 class="my-4">MES LOCATIONS EN COURS</h4>
-            <table class="table table-striped">
-                <thead>
+    <section class="row my-4 mb-3">
+        <div class="col-3">
+            <img class="img-fluid"
+                 src="{{ user.avatar ? vich_uploader_asset(user, 'avatarFile') : 'http://placehold.it/300x300' }}"
+                 alt="Avatar">
+            {% if is_current_user %}
+                <a class="btn btn-danger mr-3 my-3 ml-3" href="{{ path('logout') }}"><i
+                            class="fas fa-power-off mr-2"></i>Déconnexion</a>
+            {% endif %}
+        </div>
+        <div class="col-9">
+            <h2>{{ user.firstname }} {{ user.lastname }}</h2>
+            <p>Inscrit le {{ user.dateInscription | date('d/m/Y') }}</p>
+            {% if user.description %}<p>{{ user.description }}</p>{% endif %}
+            {% if is_current_user %}
+                <div class="btn-group">
+                    <a class="btn btn-warning mr-3" href="{{ path('profile_update') }}"><i class="fas fa-pen mr-2"></i>Modifier
+                        mon profil</a>
+                    <a class="btn btn-info" href="{{ path('profile_update_password') }}"><i
+                                class="fas fa-unlock mr-2"></i>Modifier mon mot de passe</a>
+                </div>
+            {% endif %}
+            {% if user.locations != null %}
+
+                <h4 class="mt-4">{% if is_current_user %}MES DEMANDES{% else %}DEMANDES VALIDÉES{% endif %}</h4>
+                <table class="table table-striped">
+                    <thead>
                     <tr>
                         <th scope="col">Jeux</th>
                         <th scope="col">Propriétaire</th>
@@ -33,66 +41,122 @@
                         {% endif %}
 
                     </tr>
-                </thead>
-                <tbody>
-                {% if is_current_user %}
-                    {% for location in locations %}
-                        <tr>
-                            <td>{{ location.game.name }}</td>
-                            <td>{{ location.game.user.firstname }} {{ location.game.user.lastname }}</td>
-                            <td>{{ location.statut }}</td>
-                            <td>{{ location.createdAt|date("Y/m/d") }}</td>
-                            {% if is_current_user %}
-                                {% if location.endAt != null or location.statut == 'REFUSÉ'%}
-                                    <td><a href="{{ path("delete_location", {id: location.id}) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a></td>
-                                {% elseif location.statut == "VALIDÉ" %}
-                                    <td><a href="{{ path("return_location", {id: location.id}) }}" class="btn btn-success"><i class="fas fa-undo"></i></a></td>
-                                {% endif %}
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    {% for location in locations %}
-                        {% if location.statut == "VALIDÉ" %}
+                    </thead>
+                    <tbody>
+                    {% if is_current_user %}
+                        {% for location in locations %}
                             <tr>
                                 <td>{{ location.game.name }}</td>
                                 <td>{{ location.game.user.firstname }} {{ location.game.user.lastname }}</td>
                                 <td>{{ location.statut }}</td>
-                                <td>{{ location.createdAt|date("Y/m/d") }}</td>
+                                <td>{{ location.createdAt|date("d/m/Y") }}</td>
+                                {% if is_current_user %}
+                                    <td>
+                                        <div class="btn-group">
+                                            {% if location.endAt != null or location.statut == 'REFUSÉE' %}
+                                                <a href="{{ path("delete_location", {id: location.id}) }}"
+                                                   class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                                            {% elseif location.statut == "VALIDÉE" %}
+                                                <a href="{{ path("return_location", {id: location.id}) }}"
+                                                   class="btn btn-success"><i class="fas fa-undo"></i></a>
+{#                                            {% else %}#}
+{#                                                <a href="{{ path('message', {id: location.id}) }}"#}
+{#                                                   class="btn btn-secondary"><i#}
+{#                                                            class="fas fa-envelope"></i></a>#}
+                                            {% endif %}
+                                            <a href="{{ path('message', {id: location.id}) }}"
+                                               class="btn btn-secondary ml-2"><i
+                                                        class="fas fa-envelope"></i></a>
+
+                                        </div>
+                                    </td>
+                                {% endif %}
                             </tr>
-                        {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% for location in locations %}
+                            {% if location.statut == "VALIDÉE" %}
+                                <tr>
+                                    <td>{{ location.game.name }}</td>
+                                    <td>{{ location.game.user.firstname }} {{ location.game.user.lastname }}</td>
+                                    <td>{{ location.statut }}</td>
+                                    <td>{{ location.createdAt|date("d/m/Y") }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            {% endif %}
+            {% if is_current_user %}
+                <h4 class="mt-4">MES LOCATIONS EN COURS</h4>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Jeux</th>
+                        <th scope="col">Locataire</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col">Date de lancement</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for location in ownlocations %}
+                        <tr>
+                            <td>{{ location.game.name }}</td>
+                            <td>{{ location.user.firstname }}</td>
+                            <td>{{ location.statut }}</td>
+                            <td>{{ location.createdAt|date('d/m/Y') }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    {% if location.statut == "EN ATTENTE" %}
+                                        <a href="{{ path('location', {id: location.id}) }}" class="btn btn-info mr-2"><i
+                                                    class="fas fa-eye"></i></a>
+                                    {% elseif location.statut == "REFUSÉE" %}
+                                        <a href="{{ path("delete_location", {id: location.id}) }}"
+                                           class="btn btn-danger mr-2"><i class="fas fa-trash"></i></a>
+                                    {% endif %}
+                                    <a href="{{ path('message', {id: location.id}) }}" class="btn btn-secondary"><i
+                                                class="fas fa-envelope"></i></a>
+                                </div>
+                            </td>
+                        </tr>
                     {% endfor %}
-                {% endif %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </section>
+    <section>
+        {% if is_current_user %}
+            <h3>Mes jeux</h3>
+        {% else %}
+            <h3>Les jeux de {{ user.firstname }}</h3>
         {% endif %}
-    </div>
-</section>
-<section>
-    <h3>Les jeux de {{ user.firstname }}</h3>
-    <table class="table">
-        <thead>
+        <table class="table">
+            <thead>
             <tr>
                 <th scope="col">Jeux</th>
                 {% if is_current_user %}
                     <th scope="col">Action</th>
                 {% endif %}
             </tr>
-        </thead>
-        <tbody>
-        {% for game in user.games %}
-            <tr>
-                <td>
-                    <a href="{{ path('game_details', { id: game.id }) }}">{{ game.name }}</a>
-                </td>
-                <td>
-                    {% if is_current_user %}
-                        <a href="{{ path('game_edit', { id: game.id }) }}" class="btn btn-warning"><i class="fas fa-pen"></i></a>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</section>
+            </thead>
+            <tbody>
+            {% for game in user.games %}
+                <tr>
+                    <td>
+                        <a href="{{ path('game_details', { id: game.id }) }}">{{ game.name }}</a>
+                    </td>
+                    <td>
+                        {% if is_current_user %}
+                            <a href="{{ path('game_edit', { id: game.id }) }}" class="btn btn-warning"><i
+                                        class="fas fa-pen"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
 {% endblock %}

@@ -10,11 +10,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class MessageController extends AbstractController
 {
     /**
      * @Route("/message/location/{id}", name="message")
+     * @Security("user == location.getOwner() or user == location.getUser()")
+     *
      */
     public function index(Location $location, Request $request, EntityManagerInterface $manager): Response
     {
@@ -38,13 +41,5 @@ class MessageController extends AbstractController
             'location' => $location,
             'form' => $form->createView()
         ]);
-    }
-
-    /**
-     * @Route("/message/send", name="send_message")
-     */
-    public function send(Request $request, EntityManagerInterface $manager): Response {
-
-
     }
 }

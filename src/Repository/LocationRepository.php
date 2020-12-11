@@ -19,6 +19,17 @@ class LocationRepository extends ServiceEntityRepository
         parent::__construct($registry, Location::class);
     }
 
+    public function locationOwnerIsCurrentUser($user) {
+        return $this->createQueryBuilder('location')
+            ->innerJoin('location.owner', 'user')
+            ->where('user = :user')
+            ->setParameters([
+                'user'=> $user
+            ])
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return Location[] Returns an array of Location objects
     //  */

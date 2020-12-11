@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Location;
 use App\Entity\User;
 use App\Form\ChangePasswordFormType;
 use App\Form\ProfileFormType;
+use App\Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -21,10 +23,11 @@ class UserController extends AbstractController
      * @Route("/profile", name="profile")
      * @Route("/user/{id}", name="user_details")
      */
-    public function details(User $user = null): Response
+    public function details(User $user = null, LocationRepository $locationRepository): Response
     {
         $user ??= $this->getUser();
         $locations = $user->getLocations();
+        $own = $locationRepository->locationOwnerIsCurrentUser($user);
 
         if( ! $user) {
             return $this->redirectToRoute('login');
@@ -32,7 +35,8 @@ class UserController extends AbstractController
 
         return $this->render('user/details.html.twig', [
             'user' => $user,
-            'locations' => $locations
+            'locations' => $locations,
+            'ownlocations' => $own
         ]);
     }
 

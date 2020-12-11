@@ -3,16 +3,25 @@
 {% block title %}{{ parent() }} Messages{% endblock %}
 
 {% block body %}
-<h2 class="my-4">Messagerie instantanée avec <b>{{ location.owner.firstname }} {{ location.owner.lastname }}</b></h2>
-<p class="mb-4 font-italic">Discussion pour le jeu {{ location.game.name }}</p>
+    {% if location.user == app.user %}
+    <h2 class="my-4">Messagerie instantanée avec <b>{{ location.owner.firstname }} {{ location.owner.lastname }}</b></h2>
+    {% elseif location.owner == app.user %}
+    <h2 class="my-4">Messagerie instantanée avec <b>{{ location.user.firstname }} {{ location.user.lastname }}</b></h2>
+    {% endif %}
+    <p class="mb-4 font-italic">Discussion pour le jeu {{ location.game.name }}</p>
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
     <div class="mainwrapper border border-dark rounded">
-            {% for message in location.messages %}
-                <div class="ml-2">
-                    <p><b style="color: {% if message.sender == app.user %} blue {% else %} red {% endif %}">{{ message.sender.firstname }} {{ message.sender.lastname }} : </b>{{ message.content }}</p>
-                </div>
-            {% endfor %}
+        {% for message in location.messages %}
+            <div class="ml-2">
+                <p>
+                    <b style="color: {% if message.sender == app.user %} blue {% else %} red {% endif %}"><i style="font-size: 10px">({{ message.createdAt|date('d/m/y H:m:s')}}) </i>{{ message.sender.firstname }}
+                        : </b>{{ message.content }}</p>
+            </div>
+        {% endfor %}
     </div>
     <div class="w-75 justify-content-center">
-            {{ form(form) }}
+        {{ form(form) }}
     </div>
 {% endblock %}

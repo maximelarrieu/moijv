@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class LocationController extends AbstractController
 {
@@ -24,6 +25,7 @@ class LocationController extends AbstractController
     }
     /**
      * @Route("/location/{id}", name="location")
+     * @Security("user == location.getOwner()")
      */
     public function index(Location $location): Response
     {
@@ -64,10 +66,14 @@ class LocationController extends AbstractController
                     ])
             );
 
+            $this->addFlash("success", "Votre demande a été envoyée au propriétaire du jeu. Vous pouvez le contacter à cette page pour justifier votre demande.");
+
             return $this->redirectToRoute('message', [
                 'id' => $location->getId()
             ]);
         } else {
+            $this->addFlash("error", "Ce jeu est déjà emprunté par un autre utilisateur. Reformulez votre demande ultérieurement.");
+
             return $this->redirectToRoute('game_details', [
                 'id' => $game->getId()
             ]);
@@ -79,7 +85,7 @@ class LocationController extends AbstractController
      */
     public function accept(Location $location, EntityManagerInterface $manager): Response {
         $user = $this->getUser();
-        $location->setStatut('VALIDÉ');
+        $location->setStatut('VALIDÉE');
 
         $locater = $location->getUser();
         $locater->addGame($location->getGame());
@@ -108,7 +114,7 @@ class LocationController extends AbstractController
      */
     public function refuse(Location $location, EntityManagerInterface $manager): Response {
         $user = $this->getUser();
-        $location->setStatut('REFUSÉ');
+        $location->setStatut('REFUSÉE');
 
         $locater = $location->getUser();
 

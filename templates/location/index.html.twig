@@ -4,7 +4,7 @@
 
 {% block body %}
     <h2 class="my-4">Vous avez reçu une demande de location pour votre jeu <b>{{ location.game.name }}</b></h2>
-    <p>L'utilisateur {{ location.user.firstname }} {{ location.user.lastname }} veut vous empruntrer votre jeu.</p>
+    <p>L'utilisateur {{ location.user.firstname }} {{ location.user.lastname }} veut vous empruntrer votre jeu <b>{{ location.game.name }}</b>.</p>
     <div class="btn-group">
         <a class="btn btn-success mr-2" href="{{ path('accept_location', {id: location.id}) }}"><i class="fas fa-check mr-2"></i>Accepter la location</a>
         <a class="btn btn-danger" href="{{ path('refuse_location', {id: location.id}) }}"><i class="fas fa-minus-circle mr-2"></i>Refuser la location</a>
